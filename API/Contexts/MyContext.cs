@@ -23,6 +23,18 @@ public class MyContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Role>().HasData(
+            new Role
+            {
+                Id = 1,
+                Name = "Admin"
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "User"
+            });
+
         // Membuat atribute menjadi unique
         modelBuilder.Entity<Employee>().HasIndex(e => new
         {
@@ -37,6 +49,11 @@ public class MyContext : DbContext
             .HasForeignKey<Account>(fk => fk.EmployeeNIK);
 
         // Relasi ke many employee ke one manager
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Manager)
+            .WithMany(e => e.Employees)
+            .HasForeignKey(fk => fk.ManagerId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
 

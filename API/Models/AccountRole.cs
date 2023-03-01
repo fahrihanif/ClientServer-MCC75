@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MCC75NET.Models;
@@ -13,9 +14,11 @@ public class AccountRole
     [Required, Column("role_id")]
     public int RoleId { get; set; }
 
-    // Relation & Cardinality
+    // Cardinality
+    [JsonIgnore]
     [ForeignKey(nameof(AccountNIK))]
     public Account? Account { get; set; }
+    [JsonIgnore]
     [ForeignKey(nameof(RoleId))]
     public Role? Role { get; set; }
 }

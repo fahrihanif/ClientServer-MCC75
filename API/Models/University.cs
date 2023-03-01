@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MCC75NET.Models;
 
@@ -13,5 +14,6 @@ public class University
 
 
     // Cardinality
+    [JsonIgnore]
     public ICollection<Education>? Educations { get; set; }
 }

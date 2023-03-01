@@ -1,4 +1,5 @@
 using API.Contexts;
+using API.Repositories.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,13 @@ builder.Services.AddControllers();
 // Configure DbContext to Sql Server Database
 var connectionString = builder.Configuration.GetConnectionString("Connection");
 builder.Services.AddDbContext<MyContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<UniversityRepository>();
+builder.Services.AddScoped<EducationRepository>();
+builder.Services.AddScoped<AccountRepository>();
+builder.Services.AddScoped<EmployeeRepository>();
+builder.Services.AddScoped<AccountRoleRepository>();
+builder.Services.AddScoped<ProfilingRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

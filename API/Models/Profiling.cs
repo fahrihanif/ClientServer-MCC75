@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MCC75NET.Models;
@@ -14,9 +15,11 @@ public class Profiling
     public int EducationId { get; set; }
 
 
-    // Relasi
+    // Cardinality
+    [JsonIgnore]
     [ForeignKey(nameof(EducationId))]
     public Education? Education { get; set; }
+    [JsonIgnore]
     [ForeignKey(nameof(EmployeeNIK))]
     public Employee? Employees { get; set; }
 }

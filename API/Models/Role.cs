@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MCC75NET.Models;
@@ -12,5 +13,6 @@ public class Role
     public string Name { get; set; }
 
     // Cardinality
+    [JsonIgnore]
     public ICollection<AccountRole>? AccountRoles { get; set; }
 }

@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class EducationsController : BaseController<int, Education, EducationRepository>
+public class RoleController : BaseController<int, Role, RoleRepository>
 {
-    public EducationsController(EducationRepository repository) : base(repository)
+    public RoleController(RoleRepository repository) : base(repository)
     {
     }
 }

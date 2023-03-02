@@ -1,17 +1,25 @@
-﻿using API.Repositories.Data;
+﻿using API.Base;
+using API.Repositories.Data;
 using API.ViewModels;
+using MCC75NET.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController : ControllerBase
+public class AccountController : BaseController<string, Account, AccountRepository>
 {
     private readonly AccountRepository repository;
+    private readonly IConfiguration configuration;
 
-    public AccountController(AccountRepository repository)
+    public AccountController(AccountRepository repository, IConfiguration configuration) : base(repository)
     {
         this.repository = repository;
+        this.configuration = configuration;
     }
 
     [HttpPost("Register")]
@@ -36,9 +44,37 @@ public class AccountController : ControllerBase
         try
         {
             var result = await repository.Login(loginVM);
-            return result is false
-                ? Conflict(new { statusCode = 409, message = "Account or Password Does not Match!" })
-                : Ok(new { statusCode = 200, message = "Login Success!" });
+            if (result is false)
+            {
+                return Conflict(new { statusCode = 409, message = "Account or Password Does not Match!" });
+            }
+            var userdata = repository.GetUserdata(loginVM.Email);
+            var roles = repository.GetRolesByNIK(loginVM.Email);
+
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, userdata.Email),
+                new Claim(ClaimTypes.Name, userdata.FullName)
+            };
+
+            foreach (var item in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, item));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: configuration["JWT:Issuer"],
+                audience: configuration["JWT:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(10),
+                signingCredentials: signIn
+                );
+
+            var generatedToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Ok(new { statusCode = 200, message = "Login Success!", data = generatedToken });
         }
         catch
         {
